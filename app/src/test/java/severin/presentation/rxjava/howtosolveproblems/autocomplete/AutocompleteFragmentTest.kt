@@ -8,10 +8,19 @@ class AutocompleteFragmentTest {
     @Test
     fun scratchPaper() {
 
-        val list = listOf("hi", "Bob")
-        val split = list.flatMap { it.split("") }
-        println(split)
+        assertEquals(
+            listOf("", "h", "i", ""),
+            "hi".split("")
+        )
+
+        val textChunks = listOf("hi", "I'm", "Severin")
+
+        val mapped: List<List<String>> = textChunks.map { it.split("") }
+        val flatMapped: List<String>   = textChunks.flatMap { it.split("") }
+
+        // T -> R
+        println("Mapped: $mapped")
+        // T -> Iterable<R>
+        println("FlatMapped: $flatMapped")
     }
-
-
 }

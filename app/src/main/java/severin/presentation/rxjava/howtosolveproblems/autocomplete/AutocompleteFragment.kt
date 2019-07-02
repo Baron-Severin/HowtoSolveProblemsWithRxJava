@@ -28,6 +28,7 @@ typealias SearchResults = List<String>
 class AutocompleteFragment : Fragment() {
 
     val hintApi = HintApi()
+    lateinit var disposable: Disposable
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? =
         inflater.inflate(R.layout.fragment_autocomplete, container, false)
@@ -45,7 +46,22 @@ class AutocompleteFragment : Fragment() {
          *  REQUIREMENTS
          *  Make network call for suggestions when user input changes
          *  Update autocomplete
+         *  Only listen to most recent request
+         *  Don't make a request for every character typed
+         *  Don't make any calls until 3 characters
+         *  Show progress bar during requests
+         *  Cancel if the user navigates away
          */
+        val autoCompleteHelper = AutoCompleteHelper(hintApi)
+
+        disposable = autoCompleteHelper.getAutocomplete(autocompleteEditText.textEvents(), this::showProgress)
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe { suggestions -> setSuggestions(suggestions) }
+    }
+
+    override fun onStop() {
+        super.onStop()
+        disposable.dispose()
     }
 
     /**
